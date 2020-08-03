@@ -63,19 +63,19 @@
       #  state: latest
       #when: rhel_ver == 'rhel8'
 
-- name: Configure software on nodes (RHEL 8)
-  become: yes
-  remote_user: ec2-user
-  hosts: nodes
-  roles:
-    - role: nodejs
-      when: rhel_ver == 'rhel8'
-    - role: system-user
-      when: rhel_ver == 'rhel8'
+# - name: Configure software on nodes (RHEL 8)
+#   become: yes
+#   remote_user: ec2-user
+#   hosts: nodes
+#   roles:
+#     - role: nodejs
+#       when: rhel_ver == 'rhel8'
+#     - role: system-user
+#       when: rhel_ver == 'rhel8'
       #  - role: powerline
       #when: rhel_ver == 'rhel8'
 
-- name: Configure web console (RHEL 7)
+- name: Install software and configure web console
   become: yes
   remote_user: ec2-user
   hosts: nodes
@@ -92,28 +92,28 @@
     - role: docker
       when: rhel_ver == 'rhel7'
     - role: atomic_scanner_plugins
-      when: rhel_ver == 'rhel7'
+      # when: rhel_ver == 'rhel7'
     - role: container_check_stp
-      when: rhel_ver == 'rhel7'
+      # when: rhel_ver == 'rhel7'
     - role: jq
       when: rhel_ver == 'rhel7'
     - role: skopeo
-      when: rhel_ver == 'rhel7'
+      # when: rhel_ver == 'rhel7'
     - role: nodejs
-      when: rhel_ver == 'rhel7'
+      # when: rhel_ver == 'rhel7'
     - role: system-user
-      when: rhel_ver == 'rhel7'
+      # when: rhel_ver == 'rhel7'
     - role: cockpit
-      when: rhel_ver == 'rhel7'
+      # when: rhel_ver == 'rhel7'
 
-- name: Configure web console (RHEL 8)
-  become: yes
-  remote_user: ec2-user
-  hosts: nodes
-  gather_facts: no
-  roles:
-    - role: cockpit
-      when: rhel_ver == 'rhel8'
+# - name: Configure web console (RHEL 8)
+#   become: yes
+#   remote_user: ec2-user
+#   hosts: nodes
+#   gather_facts: no
+#   roles:
+#     - role: cockpit
+#       when: rhel_ver == 'rhel8'
 
 - name: Upgrade packages
   become: yes

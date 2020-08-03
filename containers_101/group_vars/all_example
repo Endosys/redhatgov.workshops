@@ -33,10 +33,13 @@ ebs_root_block_size:              50
 #-------------------------------------------------------------------------------
 # us-east-1
 # ami_id:                         "ami-c998b6b2" # RHEL 7.4
-# ami_id:                         "ami-0d70a070" # RHEL 7.5
+# ami_id:                         "ami-0d70a070" # RHEL 7.5:q 
+# ami_id: "ami-098f16afa9edf40be"  # RHEL-8.2.0_HVM-20200423-x86_64-0-Hourly2-GP2
 # us-east-2
 # ami_id:                         "ami-cfdafaaa" # RHEL 7.4 
-# ami_id:                         "ami-8f2617ea" # RHEL 7.5 
+# ami_id:                         "ami-8f2617ea" # RHEL 7.5
+ami_id: "ami-0a54aef4ef3b5f881"  # RHEL-8.2.0_HVM-20200423-x86_64-0-Hourly2-GP2
+rhel_ver:                         "rhel8"
 #-------------------------------------------------------------------------------
 # subscription_manager     |      Red Hat Subscription via Cloud Access
 cloud_access:                      true
