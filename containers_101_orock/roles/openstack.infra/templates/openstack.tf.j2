@@ -20,26 +20,22 @@ variable "number_nodes" { default = "{{ number_nodes }}" }
 #----------------------------------------------
 # API Keys
 #----------------------------------------------
-provider "aws" {
-    access_key = "${var.aws_access_key}"
-    secret_key = "${var.aws_secret_key}"
-    region     = "${var.aws_region}"
+provider "openstack" {
+    cloud = openstack
+#    access_key = "${var.aws_access_key}"
+#    secret_key = "${var.aws_secret_key}"
+#    region     = "${var.aws_region}"
 }
 #----------------------------------------------
-# VPC
+# Project
 #----------------------------------------------
-# Main VPC that will contain everything.
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
- 
-  tags = { 
-    Name = "{{ workshop_prefix }}-containers-101-vpc" 
-  }
+# Main Project that will contain everything.
+resource "openstack_identity_project_v3" "main" {
+  name        = "fiercesw-rh-workshops"
+  description = "fiercesw-rh-workshops project"
 }
-output "aws_vpc_main" {
-  value = "Completed {{ workshop_prefix }}-containers-101-vpc"
+output "openstack_identity_project_v3_main" {
+  value = "Completed fiercesw-rh-workshops"
 }
 
 # The public subnet is where resources connected to the internet will go
