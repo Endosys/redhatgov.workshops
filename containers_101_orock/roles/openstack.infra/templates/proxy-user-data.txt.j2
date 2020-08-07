@@ -1,0 +1,6 @@
+#cloud-config
+hostname: workshop-proxy.{{ domain_name }}
+fqdn: workshop-proxy.{{ domain_name }}
+runcmd:
+- systemctl enable --now cockpit.socket
+- echo "{{ workshop_password }}" | passwd --stdin cloud-user

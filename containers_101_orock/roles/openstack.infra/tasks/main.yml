@@ -9,6 +9,50 @@
   tags:
     - tf_create
 #---------------------------------------------------
+#   Get public network
+#---------------------------------------------------
+- name: get openstack network info
+  os_networks_info:
+    cloud: openstack
+  register: network_result
+- name: set openstack public network id
+  set_fact:
+    os_public_network_id: "{{ item.id }}"
+    os_public_network_name: "{{ item.name }}"
+  loop: "{{ network_result.openstack_networks }}"
+  when: item.name  == "external-floating-ips"
+- name: show openstack public network id
+  debug:
+    var: os_public_network_id
+#---------------------------------------------------
+#   Get image id
+#---------------------------------------------------
+- name: get openstack image id
+  os_image_info:
+    cloud: openstack
+    image: "Red Hat Enterprise Linux 8.1 (BYOL)"
+  register: image_result
+- name: set openstack image id
+  set_fact:
+    os_image_id: "{{ image_result.openstack_image.id }}"
+- name: show openstack image id
+  debug:
+    var: os_image_id
+#---------------------------------------------------
+#   Get image flavor id
+#---------------------------------------------------
+- name: get openstack image flavor id
+  os_flavor_info:
+    cloud: openstack
+    name: "t1.medium"
+  register: flavor_result
+- name: set openstack image flavor id
+  set_fact:
+    os_image_flavor_id: "{{ flavor_result.openstack_flavors[0].id }}"
+- name: show openstack image flavor id
+  debug:
+    var: os_image_flavor_id
+#---------------------------------------------------
 #   INI Creation
 #---------------------------------------------------
 # - name: Template EC2 INI File
@@ -71,6 +115,11 @@
   tags:
     - tf_create
 
+- name: Template proxy-user-data
+  template: dest="{{ terraform_working_dir }}/proxy-user-data.txt"  src=proxy-user-data.txt.j2
+  tags:
+    - tf_create
+
 - name: Check Terraform version
   shell: terraform version
   register: tf
@@ -87,14 +136,14 @@
   tags:
     - tf_create
 
-# - name: Create infrastructure using Terraform
-#   terraform:
-#     project_path: "{{ terraform_working_dir }}"
-# # NOTE: force_init will be supported with Ansible 2.6
-# #    force_init: yes
-#     state: present
-#   tags:
-#     - tf_create
+- name: Create infrastructure using Terraform
+  terraform:
+    project_path: "{{ terraform_working_dir }}"
+# NOTE: force_init will be supported with Ansible 2.6
+#    force_init: yes
+    state: present
+  tags:
+    - tf_create
 
 #- name: Run Terraform ( < 0.11.0 )
 #  command: terraform apply
