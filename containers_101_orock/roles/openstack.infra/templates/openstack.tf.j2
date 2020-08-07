@@ -112,8 +112,7 @@ resource "openstack_compute_instance_v2" "instance_proxy" {
   flavor_id       = "{{ os_image_flavor_id }}"
   key_pair        = "{{ workshop_prefix }}-containers"
   security_groups = ["${openstack_compute_secgroup_v2.secgroup.name}"]
-  user_data       = "${file('proxy-user-data.txt')}"
-  #user_data       = "#cloud-config\nhostname: workshop-proxy.fiercesw.network\nfqdn: workshop-proxy.fiercesw.network"
+  user_data       = file("proxy-user-data.txt")
 
   block_device {
     uuid                  = "{{ os_image_id }}"
