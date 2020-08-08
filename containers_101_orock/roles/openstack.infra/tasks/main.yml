@@ -154,6 +154,12 @@
 # NOTE: force_init will be supported with Ansible 2.6
 #    force_init: yes
     state: present
+  register: terraform_template_output
+  tags:
+    - tf_create
+
+- debug:
+    msg: "{{ terraform_template_output }}"
   tags:
     - tf_create
 
