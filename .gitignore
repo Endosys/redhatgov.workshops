@@ -35,7 +35,7 @@ multi_ec2.yaml
 *.egg-info
 .eggs
 cover/
-ansible.cfg
+#ansible.cfg
 callback_plugins/
 inventory/ec2.ini
 inventory/terraform.py
