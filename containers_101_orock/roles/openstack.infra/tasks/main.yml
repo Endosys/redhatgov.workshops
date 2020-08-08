@@ -63,12 +63,17 @@
 #---------------------------------------------------
 #  SSH Key
 #---------------------------------------------------
+- stat:
+    path: "{{ terraform_working_dir }}/{{ workshop_prefix }}-containers"
+  register: terraform_ssh_key
+
 - name: Check for existing key and remove
   os_keypair:
     cloud: openstack
     name: "{{ workshop_prefix }}-containers"
     region_name: "{{ os_region }}"
     state: absent
+  when: terraform_ssh_key.stat.exists == false
   tags:
     - tf_create
 
@@ -79,6 +84,7 @@
     region_name: "{{ os_region }}"
     state: present
   register: openstack_key
+  when: terraform_ssh_key.stat.exists == false
   tags:
     - tf_create
 
@@ -99,6 +105,7 @@
     content: "{{ openstack_key.key.private_key }}"
     dest: "{{ terraform_working_dir }}/{{ workshop_prefix }}-containers"
     mode: 0400
+  when: terraform_ssh_key.stat.exists == false
   tags:
     - tf_create
 
