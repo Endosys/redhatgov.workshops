@@ -99,6 +99,18 @@ resource "openstack_compute_secgroup_v2" "secgroup" {
     ip_protocol = "tcp"
     cidr        = "0.0.0.0/0"
   }
+  rule {
+    from_port   = 443
+    to_port     = 443
+    ip_protocol = "tcp"
+    cidr        = "0.0.0.0/0"
+  }
+  rule {
+    from_port   = 80
+    to_port     = 80
+    ip_protocol = "tcp"
+    cidr        = "0.0.0.0/0"
+  }
 }
 output "openstack_compute_secgroup_v2_secgroup" {
   value = "Completed ${openstack_compute_secgroup_v2.secgroup.name}"
@@ -106,8 +118,8 @@ output "openstack_compute_secgroup_v2_secgroup" {
 #----------------------------------------------
 # proxy instance
 #----------------------------------------------
-resource "openstack_compute_instance_v2" "instance_proxy" {
-  name            = "{{ workshop_prefix }}-containers-101-instance_proxy"
+resource "openstack_compute_instance_v2" "proxy" {
+  name            = "{{ workshop_prefix }}-containers-101-proxy"
   # image_id        = "{{ os_image_id }}"
   flavor_id       = "{{ os_image_flavor_id }}"
   key_pair        = "{{ workshop_prefix }}-containers"
@@ -117,7 +129,7 @@ resource "openstack_compute_instance_v2" "instance_proxy" {
   block_device {
     uuid                  = "{{ os_image_id }}"
     source_type           = "image"
-    volume_size           = 50
+    volume_size           = "{{ ebs_root_block_size }}"
     boot_index            = 0
     destination_type      = "volume"
     delete_on_termination = true
@@ -131,15 +143,56 @@ resource "openstack_compute_instance_v2" "instance_proxy" {
     name = openstack_networking_network_v2.network.name
   }
 }
-output "openstack_compute_instance_v2_instance_proxy" {
-  value = "Completed ${openstack_compute_instance_v2.instance_proxy.name}"
+output "openstack_compute_instance_v2_proxy" {
+  value = "Completed ${openstack_compute_instance_v2.proxy.name}"
 }
 
 resource "openstack_compute_floatingip_associate_v2" "external_ip" {
   floating_ip = openstack_networking_floatingip_v2.floatingip.address
-  instance_id = openstack_compute_instance_v2.instance_proxy.id
-  fixed_ip    = openstack_compute_instance_v2.instance_proxy.network.0.fixed_ip_v4
+  instance_id = openstack_compute_instance_v2.proxy.id
+  fixed_ip    = openstack_compute_instance_v2.proxy.network.0.fixed_ip_v4
 }
+#----------------------------------------------
+# workshop node instances
+#----------------------------------------------
+resource "openstack_compute_instance_v2" "nodes" {
+  count           = var.number_nodes
+  name            = "{{ workshop_prefix }}-${count.index}"
+  flavor_id       = "{{ os_image_flavor_id }}"
+  key_pair        = "{{ workshop_prefix }}-containers"
+  security_groups = ["${openstack_compute_secgroup_v2.secgroup.name}"]
+  user_data       = file("node-user-data.txt")
+
+  block_device {
+    uuid                  = "{{ os_image_id }}"
+    source_type           = "image"
+    volume_size           = "{{ ebs_root_block_size }}"
+    boot_index            = 0
+    destination_type      = "volume"
+    delete_on_termination = true
+  }
+
+  metadata = {
+    Workshop = "{{ workshop_prefix }}"
+    sshUser  = "cloud-user"
+    Index    = count.index
+  }
+
+  network {
+    name = openstack_networking_network_v2.network.name
+  }
+
+  # tags = [
+  #   "index_${count.index}",
+  #   "workshop_fierce-test",
+  #   "sshuser_cloud-user"
+  # ]
+
+}
+output "openstack_compute_instance_v2_nodes" {
+  value = "Completed {{ workshop_prefix }}-nodes"
+}
+
 # # The public subnet is where resources connected to the internet will go
 # resource "aws_subnet" "public" {
 #     vpc_id                  = "${aws_vpc.main.id}"
