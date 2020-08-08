@@ -120,6 +120,11 @@
   tags:
     - tf_create
 
+- name: Template node-user-data
+  template: dest="{{ terraform_working_dir }}/node-user-data.txt"  src=node-user-data.txt.j2
+  tags:
+    - tf_create
+
 - name: Check Terraform version
   shell: terraform version
   register: tf
