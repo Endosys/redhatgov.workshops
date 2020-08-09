@@ -62,6 +62,7 @@ output "openstack_networking_network_v2_network" {
 # private subnet
 #----------------------------------------------
 resource "openstack_networking_subnet_v2" "subnet" {
+  depends_on = [openstack_networking_network_v2.network]
   name       = "{{ workshop_prefix }}-containers-101-subnet"
   network_id = openstack_networking_network_v2.network.id
   cidr       = "10.0.43.0/24"
@@ -74,6 +75,7 @@ output "openstack_networking_network_v2_subnet" {
 # router interface to private subnet
 #----------------------------------------------
 resource "openstack_networking_router_interface_v2" "router_interface" {
+  depends_on = [openstack_networking_router_v2.router,openstack_networking_subnet_v2.subnet]
   router_id = openstack_networking_router_v2.router.id
   subnet_id = openstack_networking_subnet_v2.subnet.id
 }
@@ -119,6 +121,7 @@ output "openstack_compute_secgroup_v2_secgroup" {
 # proxy instance
 #----------------------------------------------
 resource "openstack_compute_instance_v2" "proxy" {
+  depends_on      = [openstack_networking_subnet_v2.subnet,openstack_compute_secgroup_v2.secgroup]
   name            = "{{ workshop_prefix }}-containers-101-proxy"
   # image_id        = "{{ os_image_id }}"
   flavor_id       = "{{ os_image_flavor_id }}"
@@ -148,6 +151,7 @@ output "openstack_compute_instance_v2_proxy" {
 }
 
 resource "openstack_compute_floatingip_associate_v2" "external_ip" {
+  depends_on  = [openstack_networking_floatingip_v2.floatingip,openstack_compute_instance_v2.proxy]
   floating_ip = openstack_networking_floatingip_v2.floatingip.address
   instance_id = openstack_compute_instance_v2.proxy.id
   fixed_ip    = openstack_compute_instance_v2.proxy.network.0.fixed_ip_v4
@@ -156,6 +160,7 @@ resource "openstack_compute_floatingip_associate_v2" "external_ip" {
 # workshop node instances
 #----------------------------------------------
 resource "openstack_compute_instance_v2" "nodes" {
+  depends_on      = [openstack_networking_subnet_v2.subnet,openstack_compute_secgroup_v2.secgroup]
   count           = var.number_nodes
   name            = "{{ workshop_prefix }}-${count.index}"
   flavor_id       = "{{ os_image_flavor_id }}"
