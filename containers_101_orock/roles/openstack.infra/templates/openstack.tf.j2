@@ -35,7 +35,10 @@ resource "openstack_networking_floatingip_v2" "floatingip" {
   description = "{{ workshop_prefix }}-containers-101-floatingip"
 }
 output "openstack_networking_floatingip_v2_floatingip" {
-  value = "Completed {{ workshop_prefix }}-containers-101-floatingip"
+  value = "Completed {{ workshop_prefix }}-containers-101-floatingip(Public-IP: ${openstack_networking_floatingip_v2.floatingip.address})"
+}
+output "public_ip" {
+  value = openstack_networking_floatingip_v2.floatingip.address
 }
 #----------------------------------------------
 # router

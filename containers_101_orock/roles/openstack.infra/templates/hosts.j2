@@ -11,4 +11,4 @@ localhost  ansible_connection=local  ansible_python_interpreter='/usr/bin/env py
 {{workshop_prefix}}.[0:{{ number_nodes | int - 1 }}].{{ domain_name }}
 
 [proxy]
-workshop-proxy.{{ domain_name }}
+{{workshop_prefix}}.proxy.{{ domain_name }}

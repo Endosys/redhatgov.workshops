@@ -163,6 +163,20 @@
   tags:
     - tf_create
 
+- debug:
+    msg: "{{ terraform_template_output.outputs.public_ip.value }}"
+  tags:
+    - tf_create
+
+- set_fact:
+    openstack_public_ip: "{{ terraform_template_output.outputs.public_ip.value }}"
+  tags:
+    - tf_create
+
+- name: Add public ip to hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ openstack_public_ip }} {{ workshop_prefix }}.proxy.{{ domain_name }}"
 #- name: Run Terraform ( < 0.11.0 )
 #  command: terraform apply
 #  args:
