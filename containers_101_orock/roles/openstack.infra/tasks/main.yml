@@ -177,6 +177,25 @@
   lineinfile:
     path: /etc/hosts
     line: "{{ openstack_public_ip }} {{ workshop_prefix }}.proxy.{{ domain_name }}"
+
+- name: wait for proxy to be ready 
+  wait_for:
+    host: "{{ workshop_prefix }}.proxy.{{ domain_name }}"
+    port: 22
+    state: started
+    timeout: 300
+
+- name: add subscription
+  include_role:
+    name: subscription_manager
+
+- name: add nginx
+  dnf:
+    name: nginx
+    state: latest
+    
+
+#- name: configure nginx
 #- name: Run Terraform ( < 0.11.0 )
 #  command: terraform apply
 #  args:
