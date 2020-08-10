@@ -122,7 +122,7 @@ output "openstack_compute_secgroup_v2_secgroup" {
 #----------------------------------------------
 resource "openstack_compute_instance_v2" "proxy" {
   depends_on      = [openstack_networking_subnet_v2.subnet,openstack_compute_secgroup_v2.secgroup]
-  name            = "{{ workshop_prefix }}-containers-101-proxy"
+  name            = "{{ workshop_prefix }}.proxy.{{ domain_name }}"
   # image_id        = "{{ os_image_id }}"
   flavor_id       = "{{ os_image_flavor_id }}"
   key_pair        = "{{ workshop_prefix }}-containers"
@@ -162,7 +162,7 @@ resource "openstack_compute_floatingip_associate_v2" "external_ip" {
 resource "openstack_compute_instance_v2" "nodes" {
   depends_on      = [openstack_networking_subnet_v2.subnet,openstack_compute_secgroup_v2.secgroup]
   count           = var.number_nodes
-  name            = "{{ workshop_prefix }}-${count.index}"
+  name            = "{{ workshop_prefix }}.${count.index}.{{ domain_name }}"
   flavor_id       = "{{ os_image_flavor_id }}"
   key_pair        = "{{ workshop_prefix }}-containers"
   security_groups = ["${openstack_compute_secgroup_v2.secgroup.name}"]
