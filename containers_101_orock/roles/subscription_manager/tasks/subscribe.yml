@@ -110,27 +110,7 @@
         pool: "{{ pool_id }}"
         force_register: true
         state: present
-  when: not cloud_access and sm_result.failed and not rhsm_activationkey and pool_id
-  tags:
-    - rhel
-
-- name: Subscribe to RHSM via username/password
-  block:
-    - redhat_subscription:
-        username: "{{ username }}"
-        password: "{{ password }}"
-        auto_attach: true
-        force_register: true
-        state: present
-  rescue:
-    - name: Retrying subscription
-      redhat_subscription:
-        username: "{{ username }}"
-        password: "{{ password }}"
-        auto_attach: true
-        force_register: true
-        state: present
-  when: not cloud_access and sm_result.failed and not rhsm_activationkey and not pool_id
+  when: not cloud_access and sm_result.failed and not rhsm_activationkey
   tags:
     - rhel
 

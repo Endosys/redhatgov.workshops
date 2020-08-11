@@ -19,25 +19,6 @@
       state: started
       timeout: 300
 
-  - name: add external dns resolvers to access redhat subscription
-    nmcli:
-      conn_name: System eth0
-      type: ethernet
-      dns4:
-      - 8.8.8.8
-      - 8.8.4.4
-      state: present
-
-  - name: restart NetworkManager service
-    systemd:
-      name: NetworkManager
-      state: restarted
-      enabled: yes
-
-  - name: add subscription
-    include_role:
-      name: subscription_manager
-
   - name: add nginx
     dnf:
       name: nginx
